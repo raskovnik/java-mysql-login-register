@@ -4,8 +4,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Objects;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class Users extends JFrame {
+    Dotenv dotenv = Dotenv.load();
     Users(String user) {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(500, 500);
@@ -13,9 +15,9 @@ public class Users extends JFrame {
 
         String query = "SELECT * FROM users";
         try {
-            String dbUrl = "jdbc:mysql://localhost:3306/catwo?useSSL=false";
-            String uname = "root";
-            String pass = "";
+            String dbUrl = String.format("jdbc:mysql://localhost:3306/%s?useSSL=false", dotenv.get("DB_NAME"));
+            String uname = dotenv.get("USERNAME");
+            String pass = dotenv.get("USERNAME");
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection(dbUrl, uname, pass);
             PreparedStatement prepStmt = conn.prepareStatement(query);

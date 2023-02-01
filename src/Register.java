@@ -2,8 +2,10 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class Register extends JFrame implements ActionListener {
+    Dotenv dotenv = Dotenv.load();
     JLabel usernameLabel = new JLabel("Username");
     JLabel passwordLabel = new JLabel("Password");
     JLabel idLabel = new JLabel("ID Number");
@@ -63,15 +65,21 @@ public class Register extends JFrame implements ActionListener {
             String pwd = String.valueOf(password.getPassword());
             String idNo = id.getText();
             String sex = female.isSelected() ? "Female" : "Male";
+
+            try {
+                Integer.parseInt(idNo);
+            } catch (Exception error) {
+                JOptionPane.showMessageDialog(this, "Enter a valid number for your id");
+            }
             
             if (user.isEmpty() || pwd.isEmpty() || idNo.isEmpty() || (!female.isSelected() && !male.isSelected())) {
-                JOptionPane.showMessageDialog(this, "Your input contains null fields");
+                JOptionPane.showMessageDialog(this, "Your input contains empty fields");
             } else {
                 String query = "INSERT INTO users(username, password, id, sex)" + "VALUES(?, ?, ?, ?)";
                 try {
-                    String dbUrl = "jdbc:mysql://localhost:3306/catwo?useSSL=false";
-                    String uname = "root";
-                    String pass = "";
+                    String dbUrl = String.format("jdbc:mysql://localhost:3306/%s?useSSL=false", dotenv.get("DB_NAME"));
+                    String uname = dotenv.get("USERNAME");
+                    String pass = dotenv.get("USERNAME");
                     Class.forName("com.mysql.jdbc.Driver");
                     Connection conn = DriverManager.getConnection(dbUrl, uname, pass);
                     PreparedStatement prepStmt = conn.prepareStatement(query);

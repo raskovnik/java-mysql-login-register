@@ -1,3 +1,4 @@
+import io.github.cdimascio.dotenv.Dotenv;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Login extends JFrame implements ActionListener {
+    Dotenv dotenv = Dotenv.load();
     JLabel usernameLabel = new JLabel("Username");
     JLabel passwordLabel = new JLabel("Password");
     JButton login = new JButton("Login");
@@ -49,9 +51,9 @@ public class Login extends JFrame implements ActionListener {
             String query = "SELECT * FROM users where username=? AND password=?";
             try {
                 //connect to database
-                String dbUrl = "jdbc:mysql://localhost:3306/catwo?useSSL=false";
-                String uname = "root";
-                String pass = "";
+                String dbUrl = String.format("jdbc:mysql://localhost:3306/%s?useSSL=false", dotenv.get("DB_NAME"));
+                String uname = dotenv.get("USERNAME");
+                String pass = dotenv.get("USERNAME");
                 Class.forName("com.mysql.jdbc.Driver");
                 Connection conn = DriverManager.getConnection(dbUrl, uname, pass);
                 PreparedStatement prepStmt = conn.prepareStatement(query);
